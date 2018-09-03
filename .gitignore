@@ -1,0 +1,12 @@
+# editor related
+.idea
+
+# composer related
+composer.lock
+vendor/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
