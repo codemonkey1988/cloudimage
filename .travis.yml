@@ -1,0 +1,48 @@
+language: php
+sudo: false
+branches:
+  only:
+    - master
+    - /^feature\/.*$/
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.2
+    - php: 7.1
+    - php: 7.0
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+addons:
+  apt:
+    packages:
+      - parallel
+
+notifications:
+  email:
+    - schreiner.tim@gmail.com
+
+before_install:
+  - composer self-update
+  - composer --version
+
+before_script:
+  - phpenv config-rm xdebug.ini
+  - composer install
+
+script:
+  - >
+    echo;
+    echo "Running php lint...";
+    find . -name \*.php ! -path "./.src/*" | parallel --gnu php -d display_errors=stderr -l {} > /dev/null \;
+  - >
+    echo;
+    echo "Running PHP CodeSniffer";
+    composer phpcs
+  - >
+    echo;
+    echo "Running unit tests...";
+    vendor/bin/phpunit tests/
