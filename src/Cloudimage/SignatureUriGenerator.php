@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Codemonkey1988\Cloudimage\Factory;
+namespace Codemonkey1988\Cloudimage;
 
 use Codemonkey1988\Cloudimage\Operations\OperationInterface;
 
-class SignatureUriFactory extends AbstractFactory
+class SignatureUriGenerator extends DefaultUriGenerator
 {
     /**
      * @var string
@@ -14,6 +14,7 @@ class SignatureUriFactory extends AbstractFactory
 
     /**
      * SignatureUriFactory constructor.
+     *
      * @param OperationInterface $operation
      * @param string $token
      * @param string $salt
