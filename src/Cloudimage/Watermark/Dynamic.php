@@ -102,7 +102,8 @@ class Dynamic implements WatermarkInterface
         ];
 
         if (!in_array($position, $validPositions)) {
-            throw new InvalidPositionException('The given position "' . $position . '" was not valid. See POSITION_ constants', 1548317907);
+            $message = 'The given position "' . $position . '" was not valid. See POSITION_ constants';
+            throw new InvalidPositionException($message, 1548317907);
         }
 
         $this->position = $position;
