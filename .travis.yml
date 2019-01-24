@@ -17,11 +17,6 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-addons:
-  apt:
-    packages:
-      - parallel
-
 notifications:
   email:
     - schreiner.tim@gmail.com
@@ -38,7 +33,7 @@ script:
   - >
     echo;
     echo "Running php lint...";
-    find . -name \*.php ! -path "./.src/*" | parallel --gnu php -d display_errors=stderr -l {} > /dev/null \;
+    find ./src -type f -name \*.php -exec php -l {} > /dev/null \; && echo $?
   - >
     echo;
     echo "Running PHP CodeSniffer";
