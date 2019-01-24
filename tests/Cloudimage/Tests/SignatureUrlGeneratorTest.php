@@ -9,6 +9,7 @@ use Codemonkey1988\Cloudimage\Filters\Rotation;
 use Codemonkey1988\Cloudimage\Operations\Cdn;
 use Codemonkey1988\Cloudimage\Operations\Crop;
 use Codemonkey1988\Cloudimage\Operations\Width;
+use Codemonkey1988\Cloudimage\Watermark\Dynamic;
 use PHPUnit\Framework\TestCase;
 
 final class SignatureUrlGeneratorTest extends TestCase
@@ -74,6 +75,23 @@ final class SignatureUrlGeneratorTest extends TestCase
 
         $subject = new SignatureUriGenerator($operation, $this->token, $this->salt);
         $url = '//' . $this->token . '.cloudimg.io/crop/640x480/q50.r90@19cb88863ff0ac5185773ffcec9b0cf522b367b5/' . $this->image;
+
+        $this->assertSame($url, $subject->buildUri($this->image));
+    }
+
+    public function testBuildCdnUriWithWatermark()
+    {
+        $watermark = new Dynamic('https://example.tld/image.jpg', 200, 100);
+        $watermark->setOpacity(50);
+        $operation = new Cdn();
+        $operation->setWatermark($watermark);
+        $subject = new SignatureUriGenerator($operation, $this->token, $this->salt);
+        $url = '//' .
+            $this->token .
+            '.cloudimg.io/cdn/n/n@921317a9b00dc0b5a29e6b32a832361db582fd70/' .
+            $this->image .
+            '?mark_url=' . urlencode('https://example.tld/image.jpg') .
+            '&mark_width=200&mark_height=100&mark_alpha=50';
 
         $this->assertSame($url, $subject->buildUri($this->image));
     }

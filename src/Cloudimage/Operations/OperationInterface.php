@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace Codemonkey1988\Cloudimage\Operations;
 
 use Codemonkey1988\Cloudimage\Filters\FilterInterface;
+use Codemonkey1988\Cloudimage\Watermark\WatermarkInterface;
 
 interface OperationInterface
 {
@@ -54,4 +55,26 @@ interface OperationInterface
      * @param string $className
      */
     public function removeFilterByClass(string $className);
+
+    /**
+     * Does the operation contains a watermark.
+     *
+     * @return bool
+     */
+    public function hasWatermark(): bool;
+
+    /**
+     * Get the configured watermark.
+     * Before calling this method, check with hasWatermark() is there is a watermark.
+     *
+     * @return WatermarkInterface
+     */
+    public function getWatermark(): WatermarkInterface;
+
+    /**
+     * Set a watermark for this operation.
+     *
+     * @param WatermarkInterface $watermark
+     */
+    public function setWatermark(WatermarkInterface $watermark);
 }

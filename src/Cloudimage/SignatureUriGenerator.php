@@ -31,14 +31,14 @@ class SignatureUriGenerator extends DefaultUriGenerator
      */
     public function buildUri(string $originalImage): string
     {
-        $signature = sha1($this->salt . $this->buildUriSegmentsFromOperation($originalImage));
         $path = sprintf(
-            '/%s/%s/%s%s/%s',
+            '/%s/%s/%s%s/%s%s',
             $this->getOperation(),
             $this->getSize(),
             $this->getFilters(),
-            '@' . $signature,
-            $originalImage
+            '@' . $this->buildSignatureHash($originalImage),
+            $originalImage,
+            $this->buildQueryString()
         );
 
         return sprintf(
@@ -46,5 +46,20 @@ class SignatureUriGenerator extends DefaultUriGenerator
             rtrim($this->baseUrl, '/'),
             ltrim($path, '/')
         );
+    }
+
+    /**
+     * @param string $originalImage
+     * @return string
+     */
+    protected function buildSignatureHash(string $originalImage): string
+    {
+        return sha1($this->salt . sprintf(
+            '/%s/%s/%s/%s',
+            $this->getOperation(),
+            $this->getSize(),
+            $this->getFilters(),
+            $originalImage
+        ));
     }
 }

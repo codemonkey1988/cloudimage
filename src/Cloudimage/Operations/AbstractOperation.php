@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace Codemonkey1988\Cloudimage\Operations;
 
 use Codemonkey1988\Cloudimage\Filters\FilterInterface;
+use Codemonkey1988\Cloudimage\Watermark\WatermarkInterface;
 
 /**
  * Class AbstractOperation
@@ -20,6 +21,11 @@ abstract class AbstractOperation implements OperationInterface
      * @var array
      */
     private $filters;
+
+    /**
+     * @var WatermarkInterface
+     */
+    private $watermark;
 
     /**
      * AbstractOperation constructor.
@@ -86,5 +92,29 @@ abstract class AbstractOperation implements OperationInterface
         if (isset($this->filters[$className])) {
             unset($this->filters[$className]);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasWatermark(): bool
+    {
+        return $this->watermark !== null;
+    }
+
+    /**
+     * @return WatermarkInterface
+     */
+    public function getWatermark(): WatermarkInterface
+    {
+        return $this->watermark;
+    }
+
+    /**
+     * @param WatermarkInterface $watermark
+     */
+    public function setWatermark(WatermarkInterface $watermark)
+    {
+        $this->watermark = $watermark;
     }
 }

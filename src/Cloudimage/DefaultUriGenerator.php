@@ -52,12 +52,24 @@ class DefaultUriGenerator
     protected function buildUriSegmentsFromOperation(string $originalImage): string
     {
         return sprintf(
-            '/%s/%s/%s/%s',
+            '/%s/%s/%s/%s%s',
             $this->getOperation(),
             $this->getSize(),
             $this->getFilters(),
-            $originalImage
+            $originalImage,
+            $this->buildQueryString()
         );
+    }
+
+    /**
+     * @return string
+     */
+    protected function buildQueryString(): string
+    {
+        $queryString = $this->getWatermark();
+
+
+        return empty($queryString) ? '' : '?' . $queryString;
     }
 
     /**
@@ -91,6 +103,20 @@ class DefaultUriGenerator
         }
 
         return empty($filters) ? 'n' : implode('.', $filters);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getWatermark(): string
+    {
+        $watermarkSetup = '';
+
+        if ($this->operation->hasWatermark()) {
+            $watermarkSetup = $this->operation->getWatermark()->build();
+        }
+
+        return $watermarkSetup;
     }
 
     /**
