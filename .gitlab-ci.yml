@@ -1,0 +1,61 @@
+stages:
+  - lint
+  - test
+  - mirror
+
+.composer-install:
+  before_script:
+    - mkdir -p .composer/cache
+    - COMPOSER_CACHE_DIR=.composer/cache composer install
+  cache:
+    key: composer-cache
+    paths:
+      - .composer/cache
+
+lint-php:
+  stage: lint
+  image: registry.gitlab.com/codemonkey1988/docker-composer-image:2-php$PHP_VERSION
+  except:
+    - master
+  script:
+    - find ./src -name \*.php -exec php -d display_errors=stderr -l {} > /dev/null \;
+  parallel:
+    matrix:
+      - PHP_VERSION: [ '7.2', '7.3', '7.4' ]
+
+codestyle-php:
+  extends: .composer-install
+  stage: lint
+  except:
+    - master
+  image: registry.gitlab.com/codemonkey1988/docker-composer-image:2-php7.4
+  script:
+    - composer phpcs
+
+unit-tests:
+  extends:
+    - .composer-install
+  stage: test
+  except:
+    - master
+  image: registry.gitlab.com/codemonkey1988/docker-composer-image:2-php$PHP_VERSION
+  script:
+    - vendor/bin/phpunit tests/
+  parallel:
+    matrix:
+      - PHP_VERSION: [ '7.2', '7.3', '7.4' ]
+
+mirror:
+  stage: mirror
+  image: registry.gitlab.com/codemonkey1988/docker-composer-image:2-php7.4
+  only:
+    - main
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - git clone $CI_REPOSITORY_URL -b $CI_COMMIT_BRANCH repo && cd repo
+    - git config user.name "$GIT_USER_NAME"
+    - git config user.email "$GIT_USER_EMAIL"
+    - git checkout master && git merge --ff main
+    - git push https://$GITLAB_USERNAME:M2_$GITLAB_TOKEN@$GITLAB_REPOSITORY
+    - git push -f --mirror https://$GITHUB_USERNAME:ghp_$GITHUB_TOKEN@$GITHUB_REPOSITORY
